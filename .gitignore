@@ -1,3 +1,10 @@
 # Environment Files
 .env
 .envrc
+
+# Python Virtual env
+.venv/*
+.env/*
+
+# IDE Specific Files
+.idea/*

@@ -8,3 +8,12 @@
 
 # IDE Specific Files
 .idea/*
+
+# Python
+__pycache__/
+
+# OS Specific Files
+.DS_Store
+
+# Sample Data files
+**/*.csv

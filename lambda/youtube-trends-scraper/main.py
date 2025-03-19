@@ -1,4 +1,3 @@
-import argparse
 import csv
 import os
 import tempfile
@@ -14,6 +13,7 @@ from feature import prepare_feature, prepare_tags
 
 DEVELOPER_KEY = os.getenv('YOUTUBE_DATA_API_KEY')
 RAW_DATA_BUCKET = os.getenv('RAW_DATA_BUCKET')
+COUNTRY_CODES = os.getenv('COUNTRY_CODES')
 
 scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
 
@@ -136,12 +136,11 @@ def save_data(country_data: List[dict]) -> str:
     return temp_file.name
 
 
-def upload_file_to_s3(file_path: str):
+def upload_file_to_s3(file_path: str, country_code: str, current_time: datetime.datetime):
     print(f'Uploading file to S3: {file_path}')
 
-    current_time = datetime.datetime.now(datetime.UTC)
     client = boto3.client('s3')
-    object_name = f'date={time.strftime("%y-%m-%d")}/{current_time.strftime("%H.%M")}.csv'
+    object_name = f'country={country_code}/date={time.strftime("%y-%m-%d")}/{current_time.strftime("%H.%M")}.csv'
     client.upload_file(file_path, RAW_DATA_BUCKET, object_name)
 
 
@@ -150,13 +149,15 @@ def cleanup(file_path: str):
     os.remove(file_path)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--country-code', type=str,
-                        help='Country code by which the scraper will filter the trends',
-                        default='US')
-    args = parser.parse_args()
+def handler(event, context):
+    """Entry point for the lambda"""
+    print(f'Received event: {event}')
+    print(f'Received context: {context}')
 
-    country_data = scrape_data(args.country_code)
-    file_path = save_data(country_data)
-    upload_file_to_s3(file_path)
+    current_time = datetime.datetime.utcnow()
+
+    countries = COUNTRY_CODES.split(',')
+    for country_code in countries:
+        country_data = scrape_data(country_code)
+        file_path = save_data(country_data)
+        upload_file_to_s3(file_path, country_code, current_time)

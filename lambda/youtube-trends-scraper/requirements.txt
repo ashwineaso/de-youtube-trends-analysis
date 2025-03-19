@@ -1,0 +1,2 @@
+boto3==1.37.14
+google_api_python_client==2.163.0

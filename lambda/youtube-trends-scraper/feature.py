@@ -2,6 +2,7 @@ from typing import List
 
 UNSAFE_CHARS = ['"', "'", "\n", "\r", "\t", "\b", "\f", "\v"]
 
+
 def prepare_feature(feature: str) -> str:
     """
     Clean and prepare the feature string
@@ -13,7 +14,7 @@ def prepare_feature(feature: str) -> str:
     for char in UNSAFE_CHARS:
         feature = feature.replace(char, '')
 
-    return f'"{feature}"'
+    return feature
 
 
 def prepare_tags(tags: List[str]) -> str:
@@ -24,4 +25,4 @@ def prepare_tags(tags: List[str]) -> str:
     :return str:
     """
 
-    return f'"{"|".join(tags)}"'
+    return "|".join(tags)

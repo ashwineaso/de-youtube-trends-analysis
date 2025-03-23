@@ -69,40 +69,10 @@ resource "aws_iam_role_policy_attachment" "lambda-write-s3" {
   policy_arn = aws_iam_policy.lambda-write-s3.arn
 }
 
-resource "null_resource" "pip_install" {
-  provisioner "local-exec" {
-    command = "pip install --quiet --quiet --no-cache-dir --requirement ${local.lambda_root}/youtube-trends-scraper/requirements.txt --target ${local.lambda_root}/layer/python"
-  }
-
-  triggers = {
-    # Use this to force an update of pip dependencies
-    #always_run   = timestamp()
-    requirements = filemd5("${local.lambda_root}/youtube-trends-scraper/requirements.txt")
-  }
-}
-
-data "archive_file" "lambda-layer" {
-  depends_on = [null_resource.pip_install]
-  type        = "zip"
-  source_dir  = "${path.module}/../lambda/layer"
-  output_path = "${path.module}/../lambda/layer.zip"
-}
-
-resource "aws_lambda_layer_version" "layer" {
-  layer_name       = "lambda-youtube-trends-scraper-layer"
-  filename         = data.archive_file.lambda-layer.output_path
-  source_code_hash = data.archive_file.lambda-layer.output_base64sha256
-  compatible_runtimes = [local.lambda_runtime]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 data "archive_file" "lambda-function" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/youtube-trends-scraper"
-  output_path = "${path.module}/../lambda/youtube-trends-scraper.zip"
+  source_dir  = "${path.module}/../lambda/dummy"
+  output_path = "${path.module}/../builds/dummy.zip"
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -115,7 +85,6 @@ resource "aws_lambda_function" "lambda" {
 
   source_code_hash = data.archive_file.lambda-function.output_base64sha256
   filename         = data.archive_file.lambda-function.output_path
-  layers = [aws_lambda_layer_version.layer.arn]
 
   environment {
     variables = {

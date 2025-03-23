@@ -65,7 +65,7 @@ def parse_items(items: List[dict]) -> List[dict]:
         video_details['tags'] = prepare_tags(snippet.get('tags', []))
 
         # Extract the trending date
-        video_details['trendingDate'] = time.strftime("%y.%d.%m")
+        video_details['trendingDate'] = time.strftime("%Y-%m-%d")
 
         # Count the number of likes, dislikes, views and comments
         video_details['viewCount'] = statistics.get('viewCount', 0)
@@ -140,7 +140,7 @@ def upload_file_to_s3(file_path: str, country_code: str, current_time: datetime.
     print(f'Uploading file to S3: {file_path}')
 
     client = boto3.client('s3')
-    object_name = f'country={country_code}/date={time.strftime("%y-%m-%d")}/{current_time.strftime("%H.%M")}.csv'
+    object_name = f'raw_data/country={country_code}/date={time.strftime("%Y-%m-%d")}/{current_time.strftime("%H.%M")}.csv'
     client.upload_file(file_path, RAW_DATA_BUCKET, object_name)
 
 

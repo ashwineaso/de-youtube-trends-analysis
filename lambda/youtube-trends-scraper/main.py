@@ -12,7 +12,7 @@ import boto3
 from feature import prepare_feature, prepare_tags
 
 DEVELOPER_KEY = os.getenv('YOUTUBE_DATA_API_KEY')
-RAW_DATA_BUCKET = os.getenv('RAW_DATA_BUCKET')
+PROJ_BUCKET = os.getenv('PROJ_BUCKET')
 COUNTRY_CODES = os.getenv('COUNTRY_CODES')
 
 scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
@@ -141,7 +141,7 @@ def upload_file_to_s3(file_path: str, country_code: str, current_time: datetime.
 
     client = boto3.client('s3')
     object_name = f'raw_data/country={country_code}/date={time.strftime("%Y-%m-%d")}/{current_time.strftime("%H.%M")}.csv'
-    client.upload_file(file_path, RAW_DATA_BUCKET, object_name)
+    client.upload_file(file_path, PROJ_BUCKET, object_name)
 
 
 def cleanup(file_path: str):

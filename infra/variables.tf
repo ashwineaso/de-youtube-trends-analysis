@@ -2,7 +2,7 @@ variable "youtube_api_key" {
   type = string
 }
 
-variable "raw_data_bucket" {
+variable "proj_bucket" {
   type = string
 }
 

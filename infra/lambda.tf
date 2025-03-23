@@ -51,8 +51,8 @@ resource "aws_iam_policy" "lambda-write-s3" {
         Effect = "Allow",
         Action = ["s3:*"],
         Resource = [
-          "arn:aws:s3:::${var.raw_data_bucket}/*",
-          "arn:aws:s3:::${var.raw_data_bucket}"
+          "arn:aws:s3:::${var.proj_bucket}/*",
+          "arn:aws:s3:::${var.proj_bucket}"
         ]
       }
     ]
@@ -89,7 +89,7 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = {
       YOUTUBE_DATA_API_KEY = var.youtube_api_key
-      RAW_DATA_BUCKET      = var.raw_data_bucket
+      PROJ_BUCKET          = var.proj_bucket
       COUNTRY_CODES        = var.country_codes
     }
   }
